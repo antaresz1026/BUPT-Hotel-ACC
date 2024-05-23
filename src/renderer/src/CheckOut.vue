@@ -18,11 +18,11 @@ console.log(bill_statement_info)
 </script> 
 
 <template>
-    <InfoTable :info="bill_statement_info"/>
-    <article>
-        <div>Checkout room:</div>
-        <SingleSeletor :options="room_id_list" :selected="target_room_id"/>
-    </article>
-    <MyButton msg="Get Bill"/>
-    <MyButton msg="Get Bill Statement"/>
+  <InfoTable :info="bill_statement_info"/>
+  <article>
+    <div>Checkout room:</div>
+    <SingleSeletor :options="room_id_list" :selected="target_room_id"/>
+  </article>
+  <MyButton msg="Get Bill"/>
+  <MyButton msg="Get Bill Statement"/>
 </template>

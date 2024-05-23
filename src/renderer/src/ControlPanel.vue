@@ -11,19 +11,19 @@ const temperature = ref();
 </script> 
 
 <template>
-    <MultipleSeletorList/>
-    <article>
-        <div>Air-Conditioner State:</div>
-        <SingleSeletor :options="air_condition_state"/>
-    </article>
-    <article>
-        <InputBox hint_info="Temperature" :message="temperature"/>
-    </article>
-    <article>
-        <div>Fan Speed:</div>
-        <SingleSeletor :options="fan_speed_name"/>
-    </article>
-    <article>
-        <MyButton msg="Commit"/>
-    </article>
+  <MultipleSeletorList/>
+  <article>
+    <div>Air-Conditioner State:</div>
+    <SingleSeletor :options="air_condition_state"/>
+  </article>
+  <article>
+    <InputBox hint_info="Temperature" :message="temperature"/>
+  </article>
+  <article>
+    <div>Fan Speed:</div>
+    <SingleSeletor :options="fan_speed_name"/>
+  </article>
+  <article>
+    <MyButton msg="Commit"/>
+  </article>
 </template>
