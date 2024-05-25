@@ -20,7 +20,8 @@
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
-    "milligram": "^1.4.1"
+    "milligram": "^1.4.1",
+    "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.1",

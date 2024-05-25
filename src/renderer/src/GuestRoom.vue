@@ -1,55 +1,166 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue'
 import MyButton from './components/MyButton.vue'
 import InfoBox from './components/InfoBox.vue'
+import { state, SendSelfIntroduction, SendChangeRoomState } from './socket'
 // import InputBox from './components/InputBox.vue'
 // import SingleSeletor from './components/SingleSeletor.vue'
 // import MultipleSeletor from './components/MultipleSeletor.vue'
-
+// const props = defineProps(['state']);
 // const options = ref(['One', 'Two', 'Three'])
 // const message = ref("")
-const amount = ref(0)
-const billing_rules = ref("")
+
+// 房间号
+const room_id = ref("1");
+// 金额
+const cost = ref(0);
+// 计费规则
+const billing_rules = ref("");
 // 空调状态
-const air_condition_state = ref(Boolean(0))
+const air_condition_state = ref(Boolean(0));
 function change_air_condition_state() {
-  air_condition_state.value = !air_condition_state.value
+  air_condition_state.value = !air_condition_state.value;
 }
 function air_condition_state_info() {
   if (air_condition_state.value) {
-    return "On"
+    return "On";
   } else {
-    return "Off"
+    return "Off";
   }
 }
 function reversed_air_condition_state_info() {
   if (air_condition_state.value) {
-    return "Off"
+    return "Off";
   } else {
-    return "On"
+    return "On";
   }
 }
-// 温度
-const temperature = ref(16)
-const temp_upper_bound = 30
-const temp_lower_bound = 16
+// 温度和温度限制
+const temperature = ref(16);
+const temp_upper_bound = 30;
+const temp_lower_bound = 16;
 function increase_temperature() {
   if (temperature.value != temp_upper_bound) {
-    temperature.value = temperature.value + 1
+    temperature.value = temperature.value + 1;
   }
 }
 function decrease_temperature() {
   if (temperature.value != temp_lower_bound) {
-      temperature.value = temperature.value - 1
+    temperature.value = temperature.value - 1;
   }
 }
-// 风扇
-const fan_speed = ref(1)
-const fan_speed_name = ['low', 'medium', 'high']
+// 风速
+const fan_speed = ref('low');
 function adjust_fan_speed() {
-  fan_speed.value = (fan_speed.value + 1) % 3
+  if (fan_speed.value == 'low') {
+    fan_speed.value = 'medium'
+  } else if (fan_speed.value == 'medium') {
+    fan_speed.value = 'high'
+  } else if (fan_speed.value == 'high') {
+    fan_speed.value = 'low'
+  }
 }
 
+// 客房状态构建函数
+function RoomState(temperature, fan_speed, cost, room_temperature, is_open, is_working) {
+  // if (room_id != undefined) {
+  //   this.room_id = room_id;
+  // }
+  if (temperature != undefined) {
+    this.temperature = temperature;
+  }
+  if (fan_speed != undefined) {
+    this.fan_speed = fan_speed;
+  }
+  if (cost != undefined) {
+    this.cost = cost;
+  }
+  if (room_temperature != undefined) {
+    this.room_temperature = room_temperature;
+  }
+  if (is_open != undefined) {
+    this.is_open = is_open;
+  }
+  if (is_working != undefined) {
+    this.is_working = is_working;
+  }
+}
+
+// 温度模拟  
+const is_working = ref(false);
+const base_temperature = 24;
+const room_temperature = ref(base_temperature);
+const passive_amount = 1;
+const passive_time = 1;
+const active_amount = 1;
+const active_time = 1;
+
+function Ticked() {
+  if (is_working.value == false) {
+    room_temperature.value += active_amount / active_time;
+  } else {
+    let temp_dis = base_temperature - room_temperature.value;
+    // 如果环境温度大于房间温度  
+    if (temp_dis > 0) {
+      if (temp_dis > passive_amount / passive_time) {
+        room_temperature.value += passive_amount / passive_time;
+      } else {
+        room_temperature.value = base_temperature;
+      }
+    } else if (temp_dis < 0) {
+      // 如果环境温度小于房间温度  
+      if (-temp_dis > passive_amount / passive_time) {
+        room_temperature.value -= passive_amount / passive_time;
+      } else {
+        room_temperature.value = base_temperature;
+      }
+    }
+  }
+  // 构建状态并发送
+  SendChangeRoomState(
+    [room_id.value], 
+    RoomState(room_id=room_id.value, room_temperature=room_temperature.value)
+  );
+}
+
+// 客房状态修改函数  
+function ChangeRoomState(room_state) {
+  if (room_state.hasOwn('temperature')) {
+    temperature.value = room_state.temperature;
+  }
+  if (room_state.hasOwn('fan_speed')) {
+    fan_speed.value = room_state.fan_speed;
+  }
+  if (room_state.hasOwn('cost')) {
+    cost.value = room_state.cost;
+  }
+  if (room_state.hasOwn('is_open')) {
+    air_condition_state.value = room_state.is_open;
+  }
+  if (room_state.hasOwn('is_working')) {
+    is_working.value = room_state.is_working;
+  }
+}
+
+// 监视接受到的报文
+watch(state, async () => {
+  if (state.value.billingRuleEvents.length != 0) {
+    // 只接受最新的计费规则
+    billing_rules.value = state.value.billingRuleEvents.pop();
+    state.value.billingRuleEvents.length = 0;
+  }
+  if (state.value.tickEvents != 0) {
+    while (state.value.tickEvents.length != 0) {
+      state.value.tickEvents.shift();
+      Ticked();
+    }
+  }
+  if (state.value.changeRoomStateEvents.length != 0) {
+    while (state.value.changeRoomStateEvents.length != 0) {
+      ChangeRoomState(state.value.changeRoomStateEvents.shift());
+    }
+  }
+})
 
 // function callback() {
 //     console.log(message.value)
@@ -58,9 +169,9 @@ function adjust_fan_speed() {
 
 <template>
   <div class="guest_room">
-    <InfoBox class="info" :info="'Fan Speed: ' + fan_speed_name[fan_speed]"/>
+    <InfoBox class="info" :info="'Fan Speed: ' + fan_speed"/>
     <InfoBox class="info" :info="'Temperature: ' + temperature + '℃'"/>
-    <InfoBox class="info" :info="'Current Amount: ' + amount"/>
+    <InfoBox class="info" :info="'Current Cost: ' + cost"/>
     <InfoBox class="info" :info="'Billing Rules: ' + billing_rules"/>
     <InfoBox class="info" :info="'Air-Conditioner is ' + air_condition_state_info() + '!'"/>
     <span>

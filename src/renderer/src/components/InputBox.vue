@@ -5,6 +5,6 @@ const model = defineModel('message')
 </script>
 
 <template>
-    <p>{{hint_info}}: {{ model }}</p>
+    <div>{{hint_info}}: {{ model }}</div>
     <input v-model="model" placeholder="" />
 </template>
