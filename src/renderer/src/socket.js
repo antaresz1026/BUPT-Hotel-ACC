@@ -15,6 +15,8 @@ export const state = reactive({
 
 export let socket;
 export function BuildConnection(URL) {
+  if (state.connected == true)
+    return;
   // const URL = 'http://localhost:3000';
   socket = io(URL);
   let count = 0;

@@ -53,6 +53,9 @@ watch(state, async () => {
 <template>
   <InfoTable :info="bill_statement_info"/>
   <article>
+    Bill: {{ bill_info }}
+  </article>
+  <article>
     <div>Checkout room:</div>
     <SingleSeletor :options="room_id_list" :selected="target_room_id"/>
   </article>

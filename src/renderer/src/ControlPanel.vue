@@ -17,7 +17,9 @@ const all_room_state = ref({});
 const selected_room_id = ref([]);
 const selected_fan_speed = ref();
 const selected_open_state = ref();
+const air_condition_map = {"off": false, "on": true};
 const test_info = ref({"1": {room_id: "1", temperature: 1}, "2": {room_id: "2", temperature: 2}, "3": {room_id: "3", temperature: 3}});
+
 
 // 监视接受到的报文
 watch(state, async () => {
@@ -65,27 +67,35 @@ function RoomState(temperature, fan_speed, cost, room_temperature, is_open, is_w
   //   this.room_id = room_id;
   // }
   if (temperature != undefined) {
-    this.temperature = temperature;
+    RoomState.temperature = temperature;
   }
   if (fan_speed != undefined) {
-    this.fan_speed = fan_speed;
+    RoomState.fan_speed = fan_speed;
   }
   if (cost != undefined) {
-    this.cost = cost;
+    RoomState.cost = cost;
   }
   if (room_temperature != undefined) {
-    this.room_temperature = room_temperature;
+    RoomState.room_temperature = room_temperature;
   }
   if (is_open != undefined) {
-    this.is_open = is_open;
+    RoomState.is_open = is_open;
   }
   if (is_working != undefined) {
-    this.is_working = is_working;
+    RoomState.is_working = is_working;
   }
 }
 
 function CommitRoomStateChange() {
-  SendChangeRoomState();
+  // SendChangeRoomState(
+  //                     selected_room_id, 
+  //                     RoomState(temperature.value, 
+  //                               selected_fan_speed.value, 
+  //                               undefined, 
+  //                               undefined, 
+  //                               air_condition_map[selected_open_state.value]
+  //                              )
+  //                    );
   ResetInput();
 }
 
@@ -93,6 +103,8 @@ function ResetInput() {
   temperature.value = undefined;
   selected_open_state.value = undefined;
   selected_fan_speed.value = undefined;
+  selected_room_id.value = [];
+  console.log(selected_room_id.value);
 }
 </script> 
 

@@ -10,6 +10,8 @@ import { state, SendSelfIntroduction, SendChangeRoomState } from './socket'
 // const options = ref(['One', 'Two', 'Three'])
 // const message = ref("")
 
+// 更新延迟 
+const update_delay = 3000;
 // 房间号
 const room_id = ref("1");
 // 金额
@@ -20,7 +22,15 @@ const billing_rules = ref("");
 const air_condition_state = ref(Boolean(0));
 function change_air_condition_state() {
   air_condition_state.value = !air_condition_state.value;
+  UpdateOpenState();
 }
+
+let open_state_id;
+function UpdateOpenState() {
+  clearTimeout(open_state_id);
+  open_state_id = setTimeout(SendChangeRoomState, update_delay, [room_id.value], RoomState(undefined, undefined, undefined, undefined, air_condition_state.value));
+}
+
 function air_condition_state_info() {
   if (air_condition_state.value) {
     return "On";
@@ -35,6 +45,7 @@ function reversed_air_condition_state_info() {
     return "On";
   }
 }
+
 // 温度和温度限制
 const temperature = ref(16);
 const temp_upper_bound = 30;
@@ -43,12 +54,21 @@ function increase_temperature() {
   if (temperature.value != temp_upper_bound) {
     temperature.value = temperature.value + 1;
   }
+  UpdateTemperature();
 }
 function decrease_temperature() {
   if (temperature.value != temp_lower_bound) {
     temperature.value = temperature.value - 1;
   }
+  UpdateTemperature();
 }
+
+let temperature_id;
+function UpdateTemperature() {
+  clearTimeout(temperature_id);
+  temperature_id = setTimeout(SendChangeRoomState, update_delay, [room_id.value], RoomState(temperature.value));
+}
+
 // 风速
 const fan_speed = ref('low');
 function adjust_fan_speed() {
@@ -59,6 +79,13 @@ function adjust_fan_speed() {
   } else if (fan_speed.value == 'high') {
     fan_speed.value = 'low'
   }
+  UpdateFanSpeed();
+}
+
+let fan_speed_id;
+function UpdateFanSpeed() {
+  clearTimeout(fan_speed_id);
+  fan_speed_id = setTimeout(SendChangeRoomState, update_delay, [room_id.value], RoomState(undefined, fan_speed.value));
 }
 
 // 客房状态构建函数
@@ -67,22 +94,23 @@ function RoomState(temperature, fan_speed, cost, room_temperature, is_open, is_w
   //   this.room_id = room_id;
   // }
   if (temperature != undefined) {
-    this.temperature = temperature;
+    // console.log(temperature);
+    RoomState.temperature = temperature;
   }
   if (fan_speed != undefined) {
-    this.fan_speed = fan_speed;
+    RoomState.fan_speed = fan_speed;
   }
   if (cost != undefined) {
-    this.cost = cost;
+    RoomState.cost = cost;
   }
   if (room_temperature != undefined) {
-    this.room_temperature = room_temperature;
+    RoomState.room_temperature = room_temperature;
   }
   if (is_open != undefined) {
-    this.is_open = is_open;
+    RoomState.is_open = is_open;
   }
   if (is_working != undefined) {
-    this.is_working = is_working;
+    RoomState.is_working = is_working;
   }
 }
 
@@ -119,7 +147,7 @@ function Ticked() {
   // 构建状态并发送
   SendChangeRoomState(
     [room_id.value], 
-    RoomState(room_id=room_id.value, room_temperature=room_temperature.value)
+    RoomState(room_temperature=room_temperature.value)
   );
 }
 
@@ -161,6 +189,8 @@ watch(state, async () => {
     }
   }
 })
+
+
 
 // function callback() {
 //     console.log(message.value)
