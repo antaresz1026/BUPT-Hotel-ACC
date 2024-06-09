@@ -1,8 +1,8 @@
-import { reactive } from "vue"
+import { ref } from "vue"
 import { io } from "socket.io-client"
 
 
-export const state = reactive({
+export const state = ref({
   connected: false,
   billingRuleEvents: [],
   tickEvents: [],
@@ -14,15 +14,25 @@ export const state = reactive({
 });
 
 export let socket;
-export function BuildConnection(URL) {
-  if (state.connected == true)
+export function BuildConnection(URL = 'http://localhost:3000') {
+  console.log(URL);
+  // console.log(state); 
+  if (state != undefined && state.connected === true) {
+    console.log("skipped!");
     return;
-  // const URL = 'http://localhost:3000';
+  }
   socket = io(URL);
+  console.log(socket, {
+    withCredentials: true,
+    extraHeaders: {
+      "my-custom-header": "abcd"
+    }
+  });
   let count = 0;
 
   socket.on("connect", () => {
     state.connected = true;
+    console.log("connected...");
   });
 
   socket.on("disconnect", () => {

@@ -5,7 +5,7 @@ import SingleSeletor from './components/SingleSeletor.vue'
 import MyButton from './components/MyButton.vue'
 import InputBox from './components/InputBox.vue'
 
-import { state, SendChangeRoomState } from './socket'
+import { state, SendChangeRoomState, BuildConnection } from './socket'
 
 // const props = defineProps(['state'])
 
@@ -23,6 +23,7 @@ const test_info = ref({"1": {room_id: "1", temperature: 1}, "2": {room_id: "2", 
 
 // 监视接受到的报文
 watch(state, async () => {
+  console.log(state);
   if (state.value.changeRoomStateEvents.length != 0) {
     // 定位修改目标  
     // 修改指定值
@@ -104,7 +105,6 @@ function ResetInput() {
   selected_open_state.value = undefined;
   selected_fan_speed.value = undefined;
   selected_room_id.value = [];
-  console.log(selected_room_id.value);
 }
 </script> 
 
@@ -124,4 +124,5 @@ function ResetInput() {
   <article>
     <MyButton msg="Commit" @toggle-button="CommitRoomStateChange"/>
   </article>
+    <MyButton class="button" msg="Build Connection" @toggle-button="BuildConnection"/>
 </template>

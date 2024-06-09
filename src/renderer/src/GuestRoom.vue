@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import MyButton from './components/MyButton.vue'
 import InfoBox from './components/InfoBox.vue'
-import { state, SendSelfIntroduction, SendChangeRoomState } from './socket'
+import { state, SendSelfIntroduction, SendChangeRoomState, BuildConnection } from './socket'
 // import InputBox from './components/InputBox.vue'
 // import SingleSeletor from './components/SingleSeletor.vue'
 // import MultipleSeletor from './components/MultipleSeletor.vue'
@@ -210,6 +210,7 @@ watch(state, async () => {
       <MyButton class="button" msg="Adjust Fan Speed" @toggle-button="adjust_fan_speed"/>
       <MyButton class="button" msg="Increase Temperature" @toggle-button="increase_temperature"/>
     </span>
+    <MyButton class="button" msg="Build Connection" @toggle-button="BuildConnection"/>
     <!-- <SingleSeletor v-model:options="options"/> -->
     <!-- <MultipleSeletor v-model:options="options"/> -->
   </div>

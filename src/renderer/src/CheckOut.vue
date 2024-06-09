@@ -4,7 +4,7 @@ import SingleSeletor from './components/SingleSeletor.vue'
 import MyButton from './components/MyButton.vue'
 // import InfoList from './components/InfoList.vue'
 import InfoTable from './components/InfoTable.vue'
-import { state, SendQuestBill, SendQuestBillStatement } from './socket'
+import { state, SendQuestBill, SendQuestBillStatement, BuildConnection } from './socket'
 
 // const props = defineProps(['state'])
 
@@ -61,4 +61,5 @@ watch(state, async () => {
   </article>
   <MyButton msg="Get Bill" @toggle-button="GetBill"/>
   <MyButton msg="Get Bill Statement" @toggle-button="GetBillStatement"/>
+  <MyButton class="button" msg="Build Connection" @toggle-button="BuildConnection"/>
 </template>
