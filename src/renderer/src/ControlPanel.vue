@@ -88,15 +88,15 @@ function RoomState(temperature, fan_speed, cost, room_temperature, is_open, is_w
 }
 
 function CommitRoomStateChange() {
-  // SendChangeRoomState(
-  //                     selected_room_id, 
-  //                     RoomState(temperature.value, 
-  //                               selected_fan_speed.value, 
-  //                               undefined, 
-  //                               undefined, 
-  //                               air_condition_map[selected_open_state.value]
-  //                              )
-  //                    );
+  SendChangeRoomState(
+                      selected_room_id, 
+                      RoomState(temperature.value, 
+                                selected_fan_speed.value, 
+                                undefined, 
+                                undefined, 
+                                air_condition_map[selected_open_state.value]
+                               )
+                     );
   ResetInput();
 }
 

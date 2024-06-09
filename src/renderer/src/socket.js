@@ -14,20 +14,26 @@ export const state = ref({
 });
 
 export let socket;
-export function BuildConnection(URL = 'http://localhost:3000') {
+export function BuildConnection(URL = 'https://www.antaresz.cc:42133') {
   console.log(URL);
   // console.log(state); 
   if (state != undefined && state.connected === true) {
     console.log("skipped!");
     return;
   }
-  socket = io(URL);
-  console.log(socket, {
+  socket = io(URL, {
     withCredentials: true,
     extraHeaders: {
       "my-custom-header": "abcd"
     }
   });
+  console.log(socket);
+  // , {
+  //   withCredentials: true,
+  //   extraHeaders: {
+  //     "my-custom-header": "abcd"
+  //   }
+  // }
   let count = 0;
 
   socket.on("connect", () => {
