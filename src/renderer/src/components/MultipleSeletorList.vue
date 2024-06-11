@@ -32,3 +32,4 @@ console.log(props.info);
     </tbody>
   </table>
 </template>
+

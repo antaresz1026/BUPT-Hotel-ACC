@@ -5,7 +5,7 @@ import SingleSeletor from './components/SingleSeletor.vue'
 import MyButton from './components/MyButton.vue'
 import InputBox from './components/InputBox.vue'
 
-import { state, SendChangeRoomState, BuildConnection } from './socket'
+import { state, SendChangeRoomState, BuildConnection, SendSelfIntroduction, SendQuestAllRoomState } from './socket'
 
 // const props = defineProps(['state'])
 
@@ -20,6 +20,11 @@ const selected_open_state = ref();
 const air_condition_map = {"off": false, "on": true};
 const test_info = ref({"1": {room_id: "1", temperature: 1}, "2": {room_id: "2", temperature: 2}, "3": {room_id: "3", temperature: 3}});
 
+function GetAllRoomState() {
+  SendQuestAllRoomState();
+}
+
+let is_self_introducted = false;
 
 // 监视接受到的报文
 watch(state, async () => {
@@ -55,10 +60,15 @@ watch(state, async () => {
     let new_all_room_state = {}
     state.value.replyAllRoomStateEvents.length = 0;
     while (new_states.length != 0) {
-      let cur_state = new_state.shift();
-      new_all_room_state[cur_state.room_id] = new_state;
+      let cur_state = new_states.shift();
+      new_all_room_state[cur_state.room_id] = cur_state;
     }
     all_room_state.value = new_all_room_state;
+  }
+  if (state.value.connected == true && is_self_introducted == false) {
+    is_self_introducted = true;
+    SendSelfIntroduction("control", "");
+    GetAllRoomState();
   }
 })
 
@@ -68,35 +78,40 @@ function RoomState(temperature, fan_speed, cost, room_temperature, is_open, is_w
   //   this.room_id = room_id;
   // }
   if (temperature != undefined) {
-    RoomState.temperature = temperature;
+    // console.log(temperature);
+    this.temperature = temperature;
   }
   if (fan_speed != undefined) {
-    RoomState.fan_speed = fan_speed;
+    this.fan_speed = fan_speed;
   }
   if (cost != undefined) {
-    RoomState.cost = cost;
+    this.cost = cost;
   }
   if (room_temperature != undefined) {
-    RoomState.room_temperature = room_temperature;
+    this.room_temperature = room_temperature;
   }
   if (is_open != undefined) {
-    RoomState.is_open = is_open;
+    this.is_open = is_open;
   }
   if (is_working != undefined) {
-    RoomState.is_working = is_working;
+    this.is_working = is_working;
   }
 }
 
 function CommitRoomStateChange() {
-  SendChangeRoomState(
-                      selected_room_id, 
-                      RoomState(temperature.value, 
-                                selected_fan_speed.value, 
-                                undefined, 
-                                undefined, 
-                                air_condition_map[selected_open_state.value]
-                               )
-                     );
+  for (let index = 0; index < selected_room_id.value.length; index++) {
+    const element = selected_room_id.value[index];
+    SendChangeRoomState(
+      element, 
+      new RoomState(
+        temperature.value, 
+        selected_fan_speed.value, 
+        undefined, 
+        undefined, 
+        air_condition_map[selected_open_state.value]
+      )
+    );
+  }
   ResetInput();
 }
 
@@ -126,3 +141,7 @@ function ResetInput() {
   </article>
     <MyButton class="button" msg="Build Connection" @toggle-button="BuildConnection"/>
 </template>
+
+<style scoped>
+@import "src/renderer/src/assets/bulma.css"
+</style>

@@ -28,7 +28,7 @@ function change_air_condition_state() {
 let open_state_id;
 function UpdateOpenState() {
   clearTimeout(open_state_id);
-  open_state_id = setTimeout(SendChangeRoomState, update_delay, [room_id.value], RoomState(undefined, undefined, undefined, undefined, air_condition_state.value));
+  open_state_id = setTimeout(SendChangeRoomState, update_delay, room_id.value, new RoomState(undefined, undefined, undefined, undefined, air_condition_state.value));
 }
 
 function air_condition_state_info() {
@@ -66,7 +66,7 @@ function decrease_temperature() {
 let temperature_id;
 function UpdateTemperature() {
   clearTimeout(temperature_id);
-  temperature_id = setTimeout(SendChangeRoomState, update_delay, [room_id.value], RoomState(temperature.value));
+  temperature_id = setTimeout(SendChangeRoomState, update_delay, room_id.value, new RoomState(temperature.value));
 }
 
 // 风速
@@ -85,7 +85,7 @@ function adjust_fan_speed() {
 let fan_speed_id;
 function UpdateFanSpeed() {
   clearTimeout(fan_speed_id);
-  fan_speed_id = setTimeout(SendChangeRoomState, update_delay, [room_id.value], RoomState(undefined, fan_speed.value));
+  fan_speed_id = setTimeout(SendChangeRoomState, update_delay, room_id.value, new RoomState(undefined, fan_speed.value));
 }
 
 // 客房状态构建函数
@@ -95,22 +95,22 @@ function RoomState(temperature, fan_speed, cost, room_temperature, is_open, is_w
   // }
   if (temperature != undefined) {
     // console.log(temperature);
-    RoomState.temperature = temperature;
+    this.temperature = temperature;
   }
   if (fan_speed != undefined) {
-    RoomState.fan_speed = fan_speed;
+    this.fan_speed = fan_speed;
   }
   if (cost != undefined) {
-    RoomState.cost = cost;
+    this.cost = cost;
   }
   if (room_temperature != undefined) {
-    RoomState.room_temperature = room_temperature;
+    this.room_temperature = room_temperature;
   }
   if (is_open != undefined) {
-    RoomState.is_open = is_open;
+    this.is_open = is_open;
   }
   if (is_working != undefined) {
-    RoomState.is_working = is_working;
+    this.is_working = is_working;
   }
 }
 
@@ -118,27 +118,27 @@ function RoomState(temperature, fan_speed, cost, room_temperature, is_open, is_w
 const is_working = ref(false);
 const base_temperature = 24;
 const room_temperature = ref(base_temperature);
-const passive_amount = 1;
-const passive_time = 1;
-const active_amount = 1;
-const active_time = 1;
+const cur_passive_amount = 1;
+const cur_passive_time = 1;
+const cur_active_amount = 1;
+const cur_active_time = 1;
 
 function Ticked() {
   if (is_working.value == false) {
-    room_temperature.value += active_amount / active_time;
+    room_temperature.value += cur_active_amount / cur_active_time;
   } else {
     let temp_dis = base_temperature - room_temperature.value;
     // 如果环境温度大于房间温度  
     if (temp_dis > 0) {
-      if (temp_dis > passive_amount / passive_time) {
-        room_temperature.value += passive_amount / passive_time;
+      if (temp_dis > cur_passive_amount / cur_passive_time) {
+        room_temperature.value += cur_passive_amount / cur_passive_time;
       } else {
         room_temperature.value = base_temperature;
       }
     } else if (temp_dis < 0) {
       // 如果环境温度小于房间温度  
-      if (-temp_dis > passive_amount / passive_time) {
-        room_temperature.value -= passive_amount / passive_time;
+      if (-temp_dis > cur_passive_amount / cur_passive_time) {
+        room_temperature.value -= cur_passive_amount / cur_passive_time;
       } else {
         room_temperature.value = base_temperature;
       }
@@ -146,8 +146,8 @@ function Ticked() {
   }
   // 构建状态并发送
   SendChangeRoomState(
-    [room_id.value], 
-    RoomState(room_temperature=room_temperature.value)
+    room_id.value, 
+    new RoomState(undefined, undefined, undefined, room_temperature.value)
   );
 }
 
@@ -170,13 +170,15 @@ function ChangeRoomState(room_state) {
   }
 }
 
+let is_self_introducted = false;
+
 // 监视接受到的报文
 watch(state, async () => {
-  if (state.value.billingRuleEvents.length != 0) {
-    // 只接受最新的计费规则
-    billing_rules.value = state.value.billingRuleEvents.pop();
-    state.value.billingRuleEvents.length = 0;
-  }
+  // if (state.value.billingRuleEvents.length != 0) {
+  //   // 只接受最新的计费规则
+  //   billing_rules.value = state.value.billingRuleEvents.pop();
+  //   state.value.billingRuleEvents.length = 0;
+  // }
   if (state.value.tickEvents != 0) {
     while (state.value.tickEvents.length != 0) {
       state.value.tickEvents.shift();
@@ -188,6 +190,10 @@ watch(state, async () => {
       ChangeRoomState(state.value.changeRoomStateEvents.shift());
     }
   }
+  if (state.value.connected == true && is_self_introducted == false) {
+    is_self_introducted = true;
+    SendSelfIntroduction("room", "");
+  }
 })
 
 
@@ -198,30 +204,38 @@ watch(state, async () => {
 </script> 
 
 <template>
-  <div class="guest_room">
-    <InfoBox class="info" :info="'Fan Speed: ' + fan_speed"/>
-    <InfoBox class="info" :info="'Temperature: ' + temperature + '℃'"/>
-    <InfoBox class="info" :info="'Current Cost: ' + cost"/>
-    <InfoBox class="info" :info="'Billing Rules: ' + billing_rules"/>
-    <InfoBox class="info" :info="'Air-Conditioner is ' + air_condition_state_info() + '!'"/>
-    <span>
-      <MyButton class="button" :msg="'Turn ' + reversed_air_condition_state_info()" @toggle-button="change_air_condition_state"/>
-      <MyButton class="button" msg="Decrease Temperature" @toggle-button="decrease_temperature"/>
-      <MyButton class="button" msg="Adjust Fan Speed" @toggle-button="adjust_fan_speed"/>
-      <MyButton class="button" msg="Increase Temperature" @toggle-button="increase_temperature"/>
-    </span>
-    <MyButton class="button" msg="Build Connection" @toggle-button="BuildConnection"/>
+  <div class="card">
+    <div class="card-content">
+      <InfoBox class="box has-text-primary has-text-centered my-1 py-2 is-family-primary is-size-5" :info="'Fan Speed: ' + fan_speed"/>
+      <InfoBox class="box has-text-primary has-text-centered my-1 py-2 is-family-primary is-size-5" :info="'Temperature: ' + temperature + '℃'"/>
+      <InfoBox class="box has-text-primary has-text-centered my-1 py-2 is-family-primary is-size-5" :info="'Current Cost: ' + cost"/>
+      <InfoBox class="box has-text-primary has-text-centered my-1 py-2 is-family-primary is-size-5" :info="'Billing Rules: ' + billing_rules"/>
+      <InfoBox class="box has-text-primary has-text-centered my-1 py-2 is-family-primary is-size-5" :info="'Air-Conditioner is ' + air_condition_state_info() + '!'"/>
+      <div class="box pb-0 pt-1">
+        <div class="buttons has-addons is-centered my-1">
+          <MyButton class="button is-outlined is-primary column py-0 mb-0" :msg="'Turn ' + reversed_air_condition_state_info()" @toggle-button="change_air_condition_state"/>
+        </div>
+        <div class="buttons has-addons is-centered my-1">
+          <MyButton class="button is-outlined is-primary column py-0 mb-0" msg="Decrease Temperature" @toggle-button="decrease_temperature"/>
+          <MyButton class="button is-outlined is-primary column py-0 mb-0" msg="Adjust Fan Speed" @toggle-button="adjust_fan_speed"/>
+          <MyButton class="button is-outlined is-primary column py-0 mb-0" msg="Increase Temperature" @toggle-button="increase_temperature"/>
+        </div>
+        <div class="buttons has-addons is-centered my-1">
+          <MyButton class="button is-outlined is-primary column py-0" msg="Build Connection" @toggle-button="BuildConnection"/>
+        </div>
+      </div>
+    </div>
     <!-- <SingleSeletor v-model:options="options"/> -->
     <!-- <MultipleSeletor v-model:options="options"/> -->
   </div>
 </template>
 
 <style scoped>
-.guest_room {
+@import "src/renderer/src/assets/bulma.css"
+/* .guest_room {
   background: #fff;
   margin: 2rem 2rem 4rem 2rem;
-  padding: 1rem;
-  /* padding-top: 0; */
+  padding: 1rem; 
   position: relative;
   box-shadow:
     0 2px 4px 0 rgba(0, 0, 0, 0.2),
@@ -238,5 +252,5 @@ watch(state, async () => {
   padding: 0.8rem 1rem 0.7rem;
   border: 0.2rem solid #4d4d4d;
   text-align: center;
-}
+} */
 </style>

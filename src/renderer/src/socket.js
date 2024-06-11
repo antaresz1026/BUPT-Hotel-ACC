@@ -5,7 +5,7 @@ import { io } from "socket.io-client"
 
 export const state = ref({
   connected: false,
-  billingRuleEvents: [],
+  // billingRuleEvents: [],
   tickEvents: [],
   changeRoomStateEvents: [],
   replyBillEvents: [],
@@ -48,10 +48,10 @@ export function BuildConnection(URL = 'https://www.antaresz.cc:42133') {
     console.log("Disconnected...");
   });
 
-  // billing_rule被弃用
-  socket.on("billing_rule", (...args) => {
-    state.billingRuleEvents.push(args);
-  });
+  // // billing_rule被弃用
+  // socket.on("billing_rule", (...args) => {
+  //   state.billingRuleEvents.push(args);
+  // });
 
   socket.on("tick", (...args) => {
     count++;
