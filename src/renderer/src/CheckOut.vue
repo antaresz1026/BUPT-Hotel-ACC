@@ -18,7 +18,7 @@ const single_bill_statement = ref(new BillStatement(1, 2, 3));
 const bill_statement_info = ref([single_bill_statement, single_bill_statement, single_bill_statement]);
 // let target_room_id;
 const cur_room_id = ref("");
-const bill_info = ref("");
+const bill_info = ref("null");
 console.log(bill_statement_info);
 
 function GetBill() {
@@ -71,55 +71,44 @@ watch(state, async () => {
 
 <template>
 
-  
-  <div class="card">
-    <div class="box">
-      <div class="card">
-        <header class="card-header">
-          <p class="card-header-title">
-            Bill Statement
-          </p>
-        </header>
-        <div class="card-content">
-          <InfoTable :info="bill_statement_info"/>
-        </div>
-      </div>
-    </div>
-    <div class="box">
-      <div class="card">
-        <header class="card-header">
-          <p class="card-header-title">
-            Bill Info
-          </p>
-        </header>
-        <div class="card-content">
-          {{ bill_info }}
-        </div>
-      </div>
-    </div>
-    <article>
-      <div>Checkout room:</div>
-      <SingleSeletor :options="room_id_list" v-model:selected="cur_room_id"/>
-    </article>
 
-    <MyButton class="button" msg="Build Connection" @toggle-button="BuildConnection"/>
-    <footer class="card-footer">
-      <div class="card-footer-item">
-        <MyButton class="card-footer-item button is-inverted is-primary py-0" msg="Get Bill" @toggle-button="GetBill"/>
+<div class="card">
+  <div class="card-content">
+    <div class="box py-2 my-1">
+      <div class="content">
+        Bill Statement
+        <InfoTable :info="bill_statement_info"/>
       </div>
-      <div class="card-footer-item">
-        <MyButton class="card-footer-item button is-inverted is-primary py-0" msg="Get Bill Statement" @toggle-button="GetBillStatement"/>
+    </div>
+    <div class="box py-2 my-1">
+      <div class="content">
+        Bill Info:
+        {{ bill_info }}
       </div>
-      <div class="card-footer-item">
-        <MyButton class="card-footer-item button is-inverted is-primary py-0" msg="Check In" @toggle-button="QuestCheckIn"/>
+    </div>
+    <div class="box py-2 my-1">
+      <div class="selector block mb-1 mt-1">Target Room:</div>
+      <div class="selector select block is-normal mt-1 mb-5">
+        <SingleSeletor :options="room_id_list" v-model:selected="cur_room_id"/>
       </div>
-      <div class="card-footer-item">
-        <MyButton class="card-footer-item button is-inverted is-primary py-0" msg="Check Out" @toggle-button="QuestCheckOut"/>
+    </div>
+    <div class="box py-2 my-1">
+      <div class="buttons has-addons is-centered my-1">
+        <MyButton class="button is-outlined is-primary column py-0" msg="Get Bill" @toggle-button="GetBill"/>
+        <MyButton class="button is-outlined is-primary column py-0" msg="Get Bill Statement" @toggle-button="GetBillStatement"/>
+        <MyButton class="button is-outlined is-primary column py-0" msg="Check In" @toggle-button="QuestCheckIn"/>
+        <MyButton class="button is-outlined is-primary column py-0" msg="Check Out" @toggle-button="QuestCheckOut"/>
+        <MyButton class="button is-outlined is-primary column py-0" msg="Build Connection" @toggle-button="BuildConnection"/>
       </div>
-    </footer>
+    </div>
   </div>
+</div>
 </template>
 
 <style scoped>
-@import "src/renderer/src/assets/bulma.css"
+@import "src/renderer/src/assets/bulma.css";
+
+/* .selector {
+  white-space: inherit;
+} */
 </style>
