@@ -2,7 +2,13 @@
 import { ref, watch } from 'vue'
 import MyButton from './components/MyButton.vue'
 import InfoBox from './components/InfoBox.vue'
+
 import { state, SendSelfIntroduction, SendChangeRoomState, BuildConnection } from './socket'
+
+// import { createRequire } from 'module';
+// const require = createRequire(import.meta.url);
+const remote = require('@electron/remote');
+const config_data = remote.getGlobal('config_data');
 // import InputBox from './components/InputBox.vue'
 // import SingleSeletor from './components/SingleSeletor.vue'
 // import MultipleSeletor from './components/MultipleSeletor.vue'
@@ -28,7 +34,7 @@ function change_air_condition_state() {
 let open_state_id;
 function UpdateOpenState() {
   clearTimeout(open_state_id);
-  open_state_id = setTimeout(SendChangeRoomState, update_delay, room_id.value, new RoomState(undefined, undefined, undefined, undefined, air_condition_state.value));
+  open_state_id = setTimeout(SendChangeRoomState, update_delay, room_id.value, new RoomState(room_id.value, undefined, undefined, undefined, undefined, air_condition_state.value));
 }
 
 function air_condition_state_info() {
@@ -48,8 +54,8 @@ function reversed_air_condition_state_info() {
 
 // 温度和温度限制
 const temperature = ref(16);
-const temp_upper_bound = 30;
-const temp_lower_bound = 16;
+let temp_upper_bound = 30;
+let temp_lower_bound = 16;
 function increase_temperature() {
   if (temperature.value != temp_upper_bound) {
     temperature.value = temperature.value + 1;
@@ -66,7 +72,7 @@ function decrease_temperature() {
 let temperature_id;
 function UpdateTemperature() {
   clearTimeout(temperature_id);
-  temperature_id = setTimeout(SendChangeRoomState, update_delay, room_id.value, new RoomState(temperature.value));
+  temperature_id = setTimeout(SendChangeRoomState, update_delay, room_id.value, new RoomState(room_id.value, temperature.value));
 }
 
 // 风速
@@ -85,14 +91,14 @@ function adjust_fan_speed() {
 let fan_speed_id;
 function UpdateFanSpeed() {
   clearTimeout(fan_speed_id);
-  fan_speed_id = setTimeout(SendChangeRoomState, update_delay, room_id.value, new RoomState(undefined, fan_speed.value));
+  fan_speed_id = setTimeout(SendChangeRoomState, update_delay, room_id.value, new RoomState(room_id.value, undefined, fan_speed.value));
 }
 
 // 客房状态构建函数
-function RoomState(temperature, fan_speed, cost, room_temperature, is_open, is_working) {
-  // if (room_id != undefined) {
-  //   this.room_id = room_id;
-  // }
+function RoomState(room_id, temperature, fan_speed, cost, room_temperature, is_open, is_working) {
+  if (room_id != undefined) {
+    this.room_id = room_id;
+  }
   if (temperature != undefined) {
     // console.log(temperature);
     this.temperature = temperature;
@@ -116,16 +122,16 @@ function RoomState(temperature, fan_speed, cost, room_temperature, is_open, is_w
 
 // 温度模拟  
 const is_working = ref(false);
-const base_temperature = 24;
+let base_temperature = 24;
 const room_temperature = ref(base_temperature);
-const cur_passive_amount = 1;
-const cur_passive_time = 1;
-const cur_active_amount = 1;
-const cur_active_time = 1;
+let cur_passive_amount = 1;
+let cur_passive_time = 1;
+let cur_active_amount = {"low": 0, "medium": 0, "high": 0};
+let cur_active_time = {"low": 0, "medium": 0, "high": 0};
 
 function Ticked() {
   if (is_working.value == false) {
-    room_temperature.value += cur_active_amount / cur_active_time;
+    room_temperature.value += cur_active_amount[fan_speed.value] / cur_active_time[fan_speed.value];
   } else {
     let temp_dis = base_temperature - room_temperature.value;
     // 如果环境温度大于房间温度  
@@ -147,7 +153,7 @@ function Ticked() {
   // 构建状态并发送
   SendChangeRoomState(
     room_id.value, 
-    new RoomState(undefined, undefined, undefined, room_temperature.value)
+    new RoomState(room_id.value, undefined, undefined, undefined, room_temperature.value)
   );
 }
 
@@ -196,11 +202,31 @@ watch(state, async () => {
   }
 })
 
+function TryBuildConnection() {
+  BuildConnection(config_data.URL);
+}
 
+function GetConfigData() {
+  billing_rules.value = config_data.billing_rules;
+  temp_upper_bound = config_data.temperature_setting_upper_limit;
+  temp_lower_bound = config_data.temperature_setting_lower_limit;
+  room_temperature.value = config_data.inital_room_temperature;
+  base_temperature = config_data.ambient_temperature;
+  temperature.value = config_data.default_temperature_setting;
+  fan_speed.value = config_data.default_fan_speed_setting;
+  air_condition_state.value = config_data.default_open_state;
+  cur_passive_amount = config_data.ambient_temperature_change_amount;
+  cur_passive_time = config_data.ambient_temperature_change_time;
+  cur_active_amount.low = config_data.low_temperature_change_amount;
+  cur_active_time.low = config_data.low_temperature_change_time;
+  cur_active_amount.medium = config_data.medium_temperature_change_amount;
+  cur_active_time.medium = config_data.medium_temperature_change_time;
+  cur_active_amount.high = config_data.high_temperature_change_amount;
+  cur_active_time.high = config_data.high_temperature_change_time;
+  room_id.value = config_data.room_id;
+}
 
-// function callback() {
-//     console.log(message.value)
-// }
+GetConfigData()
 </script> 
 
 <template>
@@ -221,7 +247,7 @@ watch(state, async () => {
           <MyButton class="button is-outlined is-primary column py-0 mb-0" msg="Increase Temperature" @toggle-button="increase_temperature"/>
         </div>
         <div class="buttons has-addons is-centered my-1">
-          <MyButton class="button is-outlined is-primary column py-0" msg="Build Connection" @toggle-button="BuildConnection"/>
+          <MyButton class="button is-outlined is-primary column py-0" msg="Build Connection" @toggle-button="TryBuildConnection"/>
         </div>
       </div>
     </div>

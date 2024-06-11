@@ -4,7 +4,15 @@ import SingleSeletor from './components/SingleSeletor.vue'
 import MyButton from './components/MyButton.vue'
 // import InfoList from './components/InfoList.vue'
 import InfoTable from './components/InfoTable.vue'
+
 import { state, SendQuestBill, SendQuestBillStatement, BuildConnection, SendQuestRoomIdList, SendCheckIn, SendCheckOut } from './socket'
+
+// import { createRequire } from 'module';
+// const require = createRequire(import.meta.url);
+const remote = require('@electron/remote');
+const config_data = remote.getGlobal('config_data');
+
+
 
 // const props = defineProps(['state'])
 
@@ -67,6 +75,15 @@ watch(state, async () => {
   }
 })
 
+function TryBuildConnection() {
+  BuildConnection(config_data.URL);
+}
+
+function GetConfigData() {
+  // Do nothing.
+}
+
+GetConfigData()
 </script> 
 
 <template>
@@ -98,7 +115,7 @@ watch(state, async () => {
         <MyButton class="button is-outlined is-primary column py-0" msg="Get Bill Statement" @toggle-button="GetBillStatement"/>
         <MyButton class="button is-outlined is-primary column py-0" msg="Check In" @toggle-button="QuestCheckIn"/>
         <MyButton class="button is-outlined is-primary column py-0" msg="Check Out" @toggle-button="QuestCheckOut"/>
-        <MyButton class="button is-outlined is-primary column py-0" msg="Build Connection" @toggle-button="BuildConnection"/>
+        <MyButton class="button is-outlined is-primary column py-0" msg="Build Connection" @toggle-button="TryBuildConnection"/>
       </div>
     </div>
   </div>

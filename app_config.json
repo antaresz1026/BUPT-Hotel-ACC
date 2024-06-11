@@ -1,3 +1,21 @@
 {
-    "URL": "https://www.antaresz.cc:42133"
+    "URL": "https://www.antaresz.cc:42133",
+    "billing_rules": "Certain billing rules.",
+    "air_supply_mode": "cold",
+    "temperature_setting_upper_limit": 30,
+    "temperature_setting_lower_limit": 16,
+    "inital_room_temperature": 20,
+    "ambient_temperature": 20,
+    "default_temperature_setting": 25,
+    "default_fan_speed_setting": "medium",
+    "default_open_state": false,
+    "ambient_temperature_change_amount": 1,
+    "ambient_temperature_change_time": 2,
+    "low_temperature_change_amount": -1,
+    "low_temperature_change_time": 1,
+    "medium_temperature_change_amount": -2,
+    "medium_temperature_change_time": 1,
+    "high_temperature_change_amount": -3,
+    "high_temperature_change_time": 1,
+    "room_id": "room001"
 }

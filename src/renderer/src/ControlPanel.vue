@@ -7,6 +7,13 @@ import InputBox from './components/InputBox.vue'
 
 import { state, SendChangeRoomState, BuildConnection, SendSelfIntroduction, SendQuestAllRoomState } from './socket'
 
+// import { createRequire } from 'module';
+// const require = createRequire(import.meta.url);
+const remote = require('@electron/remote');
+const config_data = remote.getGlobal('config_data');
+
+
+
 // const props = defineProps(['state'])
 
 const fan_speed_name = ['low', 'medium', 'high']
@@ -73,10 +80,10 @@ watch(state, async () => {
 })
 
 // 客房状态构建函数
-function RoomState(temperature, fan_speed, cost, room_temperature, is_open, is_working) {
-  // if (room_id != undefined) {
-  //   this.room_id = room_id;
-  // }
+function RoomState(room_id, temperature, fan_speed, cost, room_temperature, is_open, is_working) {
+  if (room_id != undefined) {
+    this.room_id = room_id;
+  }
   if (temperature != undefined) {
     // console.log(temperature);
     this.temperature = temperature;
@@ -104,6 +111,7 @@ function CommitRoomStateChange() {
     SendChangeRoomState(
       element, 
       new RoomState(
+        element,
         temperature.value, 
         selected_fan_speed.value, 
         undefined, 
@@ -121,6 +129,16 @@ function ResetInput() {
   selected_fan_speed.value = undefined;
   selected_room_id.value = [];
 }
+
+function TryBuildConnection() {
+  BuildConnection(config_data.URL);
+}
+
+function GetConfigData() {
+  // Do nothing.
+}
+
+GetConfigData()
 </script> 
 
 <template>
@@ -139,7 +157,7 @@ function ResetInput() {
   <article>
     <MyButton msg="Commit" @toggle-button="CommitRoomStateChange"/>
   </article>
-    <MyButton class="button" msg="Build Connection" @toggle-button="BuildConnection"/>
+    <MyButton class="button" msg="Build Connection" @toggle-button="TryBuildConnection"/>
 </template>
 
 <style scoped>

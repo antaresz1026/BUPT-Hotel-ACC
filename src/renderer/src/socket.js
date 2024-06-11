@@ -1,6 +1,7 @@
 import { ref } from "vue"
 import { io } from "socket.io-client"
-
+// const { remote } = require('electron');
+// const config_data = remote.getGlobal('config_data');
 
 
 export const state = ref({
@@ -15,11 +16,11 @@ export const state = ref({
 });
 
 export let socket;
-export function BuildConnection(URL = 'https://www.antaresz.cc:42133') {
+export function BuildConnection(URL = undefined) {
 
   console.log(URL);
   // console.log(state); 
-  if (state != undefined && state.connected === true) {
+  if (state != undefined && state.value.connected === true) {
     console.log("skipped!");
     return;
   }

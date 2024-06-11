@@ -4,6 +4,9 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 var fs = require("fs")
 
+// const remote = require('electron').remote;
+
+
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -14,9 +17,16 @@ function createWindow() {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true,
     }
   })
+  require('@electron/remote/main').initialize()
+  require("@electron/remote/main").enable(mainWindow.webContents)
+  // remote.initialize()
+  // remote.enable(mainWindow.webContents)
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
@@ -36,6 +46,7 @@ function createWindow() {
   }
 }
 
+global.config_data = {};
 
 app.on('ready', () => {
   const appPath = app.getAppPath();
@@ -52,6 +63,8 @@ app.on('ready', () => {
 
   const configData = JSON.parse(rawConfig)
   console.log('configData:', configData)
+
+  global.config_data = configData
 });
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
