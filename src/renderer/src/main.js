@@ -10,6 +10,6 @@ import CheckOut from './CheckOut.vue'
 import ControlPanel from './ControlPanel.vue'
 
 // createApp(App).mount('#app')
-// createApp(GuestRoom).mount('#guestroom')
+createApp(GuestRoom).mount('#guestroom')
 // createApp(CheckOut).mount('#checkout')
-createApp(ControlPanel).mount('#controlpanel')
+// createApp(ControlPanel).mount('#controlpanel')
