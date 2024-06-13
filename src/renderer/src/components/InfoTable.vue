@@ -25,5 +25,5 @@ const props = defineProps(['info'])
 </template>
 
 <style scoped>
-@import "src/renderer/src/assets/bulma.css"
+@import "../assets/bulma.css"
 </style>

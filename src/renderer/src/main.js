@@ -5,7 +5,7 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import { state } from './socket'
-import App from './App.vue'
+// import App from './App.vue'
 import GuestRoom from './GuestRoom.vue'
 import CheckOut from './CheckOut.vue'
 import ControlPanel from './ControlPanel.vue'

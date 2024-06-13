@@ -1,33 +1,31 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+import icon from '../../resources/icon.png'
 var fs = require("fs")
 
 // const remote = require('electron').remote;
-
 
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
-    show: false,
+    show: true,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      // preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
       nodeIntegration: true,
       contextIsolation: false,
       enableRemoteModule: true,
     }
   })
-  require('@electron/remote/main').initialize()
-  require("@electron/remote/main").enable(mainWindow.webContents)
   // remote.initialize()
   // remote.enable(mainWindow.webContents)
-
+  require('@electron/remote/main').initialize()
+  require("@electron/remote/main").enable(mainWindow.webContents)
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })
@@ -42,6 +40,7 @@ function createWindow() {
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
+    mainWindow.webContents.openDevTools()
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
@@ -49,20 +48,20 @@ function createWindow() {
 global.config_data = {};
 
 app.on('ready', () => {
-  const appPath = app.getAppPath();
-  console.log('appPath:', appPath)
+  const appPath = process.cwd()
+  // console.log('appPath:', appPath)
 
   const configFilename = "app_config.json"
-  console.log('configFilename:', configFilename)
+  // console.log('configFilename:', configFilename)
 
-  const configPath = appPath + "\\" + configFilename
-  console.log('configPath:', configPath)
+  const configPath = appPath + "\\extra-files\\" + configFilename
+  // console.log('configPath:', configPath)
 
   const rawConfig = fs.readFileSync(configPath)
-  console.log('rawConfig:', rawConfig)
+  // console.log('rawConfig:', rawConfig)
 
   const configData = JSON.parse(rawConfig)
-  console.log('configData:', configData)
+  // console.log('configData:', configData)
 
   global.config_data = configData
 });
@@ -85,7 +84,6 @@ app.whenReady().then(() => {
 
   // 获取配置
 
-  
   createWindow()
 
 

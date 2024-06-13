@@ -198,7 +198,7 @@ watch(state, async () => {
   }
   if (state.value.connected == true && is_self_introducted == false) {
     is_self_introducted = true;
-    SendSelfIntroduction("room", "");
+    SendSelfIntroduction("room", config_data.room_id);
   }
 })
 
@@ -257,7 +257,7 @@ GetConfigData()
 </template>
 
 <style scoped>
-@import "src/renderer/src/assets/bulma.css"
+@import "./assets/bulma.css"
 /* .guest_room {
   background: #fff;
   margin: 2rem 2rem 4rem 2rem;

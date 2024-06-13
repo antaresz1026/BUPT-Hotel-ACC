@@ -127,7 +127,7 @@ GetConfigData()
 </template>
 
 <style scoped>
-@import "src/renderer/src/assets/bulma.css";
+@import "./assets/bulma.css";
 
 /* .selector {
   white-space: inherit;

@@ -10,6 +10,8 @@ files:
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
 asarUnpack:
   - resources/**
+extraFiles:
+  - './extra-files'
 win:
   executableName: electron-app
 nsis:
