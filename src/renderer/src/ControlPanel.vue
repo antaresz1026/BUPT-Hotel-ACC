@@ -142,22 +142,34 @@ GetConfigData()
 </script> 
 
 <template>
-  <MultipleSeletorList :info="test_info" v-model:selected="selected_room_id"/>
-  <article>
-    <div>Air-Conditioner State:</div>
-    <SingleSeletor :options="air_condition_state" v-model:selected="selected_open_state"/>
-  </article>
-  <article>
-    <InputBox hint_info="Temperature" v-model:message="temperature"/>
-  </article>
-  <article>
-    <div>Fan Speed:</div>
-    <SingleSeletor :options="fan_speed_name" v-model:selected="selected_fan_speed"/>
-  </article>
-  <article>
-    <MyButton msg="Commit" @toggle-button="CommitRoomStateChange"/>
-  </article>
-    <MyButton class="button" msg="Build Connection" @toggle-button="TryBuildConnection"/>
+  <div class="card has-background-primary-light">
+    <div class="card-content">
+      <div class="box py-2 my-1">
+        <MultipleSeletorList :info="test_info" v-model:selected="selected_room_id"/>
+      </div>
+      <div class="box py-2 my-1">
+        <div class="has-text-primary">
+          Air-Conditioner State:
+        </div>
+        <div class="select is-small is-primary my-1">
+          <SingleSeletor :options="air_condition_state" v-model:selected="selected_open_state"/>
+        </div>
+        <InputBox hint_info="Temperature" v-model:message="temperature"/>
+        <div class="has-text-primary mt-1">
+          Fan Speed:
+        </div>
+        <div class="select is-small is-primary my-1">
+          <SingleSeletor :options="fan_speed_name" v-model:selected="selected_fan_speed"/>
+        </div>
+      </div>
+      <div class="box py-2 my-1">
+        <div class="buttons has-addons is-centered my-1">
+            <MyButton class="button is-outlined is-primary column py-0" msg="Commit" @toggle-button="CommitRoomStateChange"/>
+            <MyButton class="button is-outlined is-primary column py-0" msg="Build Connection" @toggle-button="TryBuildConnection"/>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>

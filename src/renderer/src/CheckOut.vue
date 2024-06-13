@@ -89,25 +89,29 @@ GetConfigData()
 <template>
 
 
-<div class="card">
+<div class="card has-background-primary-light">
   <div class="card-content">
     <div class="box py-2 my-1">
       <div class="content">
-        Bill Statement
+        <div class="has-text-centered is-size-5 has-text-primary">
+          Bill Statement
+        </div>
         <InfoTable :info="bill_statement_info"/>
       </div>
     </div>
     <div class="box py-2 my-1">
-      <div class="content">
+      <div class="content has-text-primary">
         Bill Info:
         {{ bill_info }}
       </div>
     </div>
     <div class="box py-2 my-1">
-      <div class="selector block mb-1 mt-1">Target Room:</div>
-      <div class="selector select block is-normal mt-1 mb-5">
-        <SingleSeletor :options="room_id_list" v-model:selected="cur_room_id"/>
+      <div class="content mb-1 mt-1 has-text-primary">
+        Target Room:
       </div>
+        <div class="select is-small is-primary mb-2">
+          <SingleSeletor :options="room_id_list" v-model:selected="cur_room_id"/>
+        </div>
     </div>
     <div class="box py-2 my-1">
       <div class="buttons has-addons is-centered my-1">

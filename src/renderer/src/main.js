@@ -1,4 +1,5 @@
-// import './assets/main.css'
+import './assets/main.css'
+// import './assets/bulma.css'
 // import './assets/base.css'
 // import 'milligram/dist/milligram.css'
 

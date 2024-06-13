@@ -230,7 +230,7 @@ GetConfigData()
 </script> 
 
 <template>
-  <div class="card">
+  <div class="card has-background-primary-light">
     <div class="card-content">
       <InfoBox class="box has-text-primary has-text-centered my-1 py-2 is-family-primary is-size-5" :info="'Fan Speed: ' + fan_speed"/>
       <InfoBox class="box has-text-primary has-text-centered my-1 py-2 is-family-primary is-size-5" :info="'Temperature: ' + temperature + '℃'"/>

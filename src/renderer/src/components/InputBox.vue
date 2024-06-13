@@ -5,6 +5,10 @@ const model = defineModel('message')
 </script>
 
 <template>
-    <div>{{hint_info}}: {{ model }}</div>
-    <input v-model="model" placeholder="" />
+    <div class="has-text-primary mt-1">{{hint_info}}: {{ model }}</div>
+    <input class="input is-primary is-small my-1" v-model="model" placeholder="" />
 </template>
+
+<style scoped>
+@import "src/renderer/src/assets/bulma.css"
+</style>

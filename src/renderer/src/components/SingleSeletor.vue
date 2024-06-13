@@ -6,7 +6,7 @@ const model = defineModel('selected')
 
 <template>
     <select v-model="model">
-        <option disabled value="">Choose Room ID</option>
+        <option disabled value="">Choose One</option>
         <option v-for="option in options" :value="option">
             {{ option }}
         </option>

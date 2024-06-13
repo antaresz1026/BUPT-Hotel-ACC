@@ -1,4 +1,4 @@
-:root {
+/* :root {
   --ev-c-white: #ffffff;
   --ev-c-white-soft: #f8f8f8;
   --ev-c-white-mute: #f2f2f2;
@@ -21,15 +21,15 @@
   --ev-button-alt-hover-border: transparent;
   --ev-button-alt-hover-text: var(--ev-c-text-1);
   --ev-button-alt-hover-bg: var(--ev-c-gray-2);
-}
+} */
 
-:root {
+/* :root {
   --color-background: var(--ev-c-black);
   --color-background-soft: var(--ev-c-black-soft);
   --color-background-mute: var(--ev-c-black-mute);
 
   --color-text: var(--ev-c-text-1);
-}
+} */
 
 *,
 *::before,
@@ -39,11 +39,11 @@
   font-weight: normal;
 }
 
-ul {
+/* ul {
   list-style: none;
-}
+} */
 
-body {
+/* body {
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
@@ -64,4 +64,4 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
+} */
